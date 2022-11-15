@@ -7,6 +7,7 @@ env:
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 7.0.x
   WORKING_DIRECTORY: src/PTI.Microservices.Library.AzureMaps/PTI.Microservices.Library.AzureMaps.csproj
+  TESTS_PROJECT: src/PTI.Microservices.Library.AzureMaps.AutomatedTests/PTI.Microservices.Library.AzureMaps.AutomatedTests.csproj
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
   NUGET_SOURCE_URL: https://api.nuget.org/v3/index.json
 jobs:
@@ -22,6 +23,8 @@ jobs:
       run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
     - name: Build Library
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+    - name: Run Tests
+      run: dotnet test "${{ env.TESTS_PROJECT }}" -e AzureMapsConfiguration:Key=${{ secrets.AZUREMAPSCONFIGURATION_KEY }} -e RapidApiKey=${{ secrets.RapidApiKey }} 
     - name: Pack Project
       run: dotnet pack "${{ env.WORKING_DIRECTORY }}" --no-restore --no-build --configuration ${{ env.CONFIGURATION }} --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
     - name: Push Package
